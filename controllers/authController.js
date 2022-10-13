@@ -54,16 +54,20 @@ export async function signIn(req, res) {
     const user = await db.query(`SELECT * FROM sessions WHERE "userId" = $1;`, [
       userId,
     ]);
-    const id = user.rows[0].id;
 
-    if (user.rowCount > 0) {
-      await db.query(`UPDATE sessions SET token='${token}'  WHERE id=${id};`);
-    } else {
-      await db.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`, [
-        token,
-        userId,
-      ]);
-    }
+     if (user.rows > 0) {
+       const id = user.rows[0].id;
+
+       if (user.rowCount > 0) {
+         await db.query(`UPDATE sessions SET token='${token}'  WHERE id=${id};`);
+       }
+       return res.status(200).send({ token });
+     }
+
+     await db.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`, [
+       token,
+       userId,
+     ]);
 
     return res.status(200).send({ token });
   } catch (e) {
