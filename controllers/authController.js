@@ -55,19 +55,19 @@ export async function signIn(req, res) {
       userId,
     ]);
 
-     if (user.rows > 0) {
-       const id = user.rows[0].id;
+    if (user.rows > 0) {
+      const id = user.rows[0].id;
 
-       if (user.rowCount > 0) {
-         await db.query(`UPDATE sessions SET token='${token}'  WHERE id=${id};`);
-       }
-       return res.status(200).send({ token });
-     }
+      if (user.rowCount > 0) {
+        await db.query(`UPDATE sessions SET token='${token}'  WHERE id=${id};`);
+      }
+      return res.status(200).send({ token });
+    }
 
-     await db.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`, [
-       token,
-       userId,
-     ]);
+    await db.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`, [
+      token,
+      userId,
+    ]);
 
     return res.status(200).send({ token });
   } catch (e) {
