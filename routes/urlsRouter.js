@@ -4,7 +4,7 @@ import {
   urlsShorten,
   openShortUrl,
   deleteUrl,
-} from "../controllers/shortUrlsController.js";
+} from "../controllers/UrlsController.js";
 import urlSchema from "../schemas/schemaURL.js";
 import validateSchema from "../middlewares/valitationMiddleware.js";
 import valitationToken from "../middlewares/valitationToken.js";
