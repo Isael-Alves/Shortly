@@ -70,18 +70,22 @@ async function openShortUrl(req, res) {
   const { shortUrl } = req.params;
 
   try {
-    const { rowCount, rows } = await db.query(`SELECT * FROM urls WHERE "shortUrl" = $1`, [
-      shortUrl,
-    ]);
-    
-    if(rowCount === 0){
+    const { rowCount, rows } = await db.query(
+      `SELECT * FROM urls WHERE "shortUrl" = $1`,
+      [shortUrl]
+    );
+
+    if (rowCount === 0) {
       return res.sendStatus(404);
     }
     const visitCount = rows[0].visitCount;
     const url = rows[0].url;
-    
-    await db.query(`UPDATE urls SET "visitCount"='${visitCount + 1}' WHERE "shortUrl" = $1;`,[shortUrl]);
-    
+
+    await db.query(
+      `UPDATE urls SET "visitCount"='${visitCount + 1}' WHERE "shortUrl" = $1;`,
+      [shortUrl]
+    );
+
     return res.redirect(url);
   } catch (e) {
     console.log(e);
@@ -89,4 +93,31 @@ async function openShortUrl(req, res) {
   }
 }
 
-export { urlsShorten, getConsultSessions, openShortUrl };
+async function deleteUrl(req, res) {
+  const { id } = req.params;
+  const { user } = res.locals;
+
+  try {
+    const { rows, rowCount } = await db.query(
+      "SELECT * FROM urls WHERE id = $1",
+      [id]
+    );
+    if (rowCount === 0) {
+      return res.status(404).send("Url não existente!");
+    }
+    const url = rows[0];
+    
+    if (url.userId !== user[0].id) {
+      return res.sendStatus(401);
+    }
+
+    await db.query('DELETE FROM urls WHERE id=$1', [id]);
+
+    return res.status(204).send("Url excluída!");
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+}
+
+export { urlsShorten, getConsultSessions, openShortUrl, deleteUrl };
