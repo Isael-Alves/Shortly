@@ -10,8 +10,8 @@ async function getRanking(req, res) {
     ORDER BY "visitCount" DESC
     LIMIT 10
   `);
-  const ranking = rows;
-  return res.send(ranking);
+    const ranking = rows;
+    return res.send(ranking);
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
